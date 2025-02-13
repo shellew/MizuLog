@@ -12,7 +12,7 @@ h1 {
     margin: 20px 0;
 }
 
-.progress-container {
+.progress-bar {
     width: 80%;
     background-color: #ddd;
     border-radius: 10px;
@@ -20,13 +20,14 @@ h1 {
     margin: 20px 0;
 }
 
-.progress-bar {
+.progress-bar-inner {
     height: 30px;
-    background-color: #4caf50;
+    background-color: #82ade8;
     width: 0%;
     text-align: center;
     color: white;
     line-height: 30px;
+    transition: width 0.3s ease-in-out;
 }
 
 .buttons {

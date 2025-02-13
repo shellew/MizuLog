@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dailyGoalDisplay = document.getElementById('goal');
     const setGoalButton = document.getElementById('set-goal-button');
     const goalInput = document.getElementById('goal-input');
+    const progressBarInner = document.getElementById('progress-bar-inner');
 
     logButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(response => response.json())
                 .then(data => {
                     currentIntakeDisplay.textContent = `${data.current_intake}ml`;
+                    updateProgressBar(data.progress);
                 });
         });
     });
@@ -30,8 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 currentIntakeDisplay.textContent = `${data.current_intake}ml`;
-            })
-    })
+                updateProgressBar(data.progress);
+            });
+    });
 
     setGoalButton.addEventListener('click', () => {
         const newGoal = parseInt(goalInput.value, 10);
@@ -51,6 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 dailyGoalDisplay.textContent = `${data.daily_goal}ml`;
                 goalInput.value = '';
-            })
-    })
+                updateProgressBar(data.progress);
+            });
+    });
+
+    function updateProgressBar(progress) {
+        progressBarInner.style.width = `${progress}%`;
+    }
 });

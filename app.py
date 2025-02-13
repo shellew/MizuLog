@@ -6,6 +6,7 @@ app = Flask(__name__)
 # 初期データ
 current_intake = 0
 DAILY_GOAL = 0
+progress = 0
 
 @app.route('/')
 def index():
@@ -16,8 +17,10 @@ def log_intake():
     global current_intake
     amount = int(request.json.get('amount', 0))
     current_intake += amount
+    progress = round((current_intake / DAILY_GOAL) * 100)
     return jsonify({
-        'current_intake': current_intake
+        'current_intake': current_intake,
+        'progress': progress
     })
 
 @app.route('/reset', methods=['POST'])
@@ -25,7 +28,8 @@ def reset_intake():
     global current_intake
     current_intake = 0
     return jsonify({
-        'current_intake': current_intake
+        'current_intake': current_intake,
+        'progress': 0
     })
 
 @app.route('/set-goal', methods=['POST'])
