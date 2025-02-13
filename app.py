@@ -28,6 +28,16 @@ def reset_intake():
         'current_intake': current_intake
     })
 
+@app.route('/set-goal', methods=['POST'])
+def set_goal():
+    global DAILY_GOAL
+    goal = int(request.json.get('goal', 0))
+    if goal > 0:
+        DAILY_GOAL = goal
+    return jsonify({
+        'daily_goal': DAILY_GOAL
+    })
+
 # アプリの実行
 if __name__ == '__main__':
     app.run(debug=True)
