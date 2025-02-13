@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    margin: 20px 0;
+}
+
+.progress-container {
+    width: 80%;
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.progress-bar {
+    height: 30px;
+    background-color: #4caf50;
+    width: 0%;
+    text-align: center;
+    color: white;
+    line-height: 30px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+}
+
+.buttons button:hover {
+    background-color: #0056b3;
+}
+
+#reset-button {
+    background-color: #f44336;
+}
+
+#reset-button:hover {
+    background-color: #d32f2f;
+}

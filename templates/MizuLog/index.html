@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<h1>みずログ</h1>
+<div>
+    <p>今日の目標: <span id="goal">{{ daily_goal }}ml</span></p>
+    <p>現在: <span id="current-intake">{{ current_intake }}ml</span></p>
+</div>
+<div class="buttons">
+    <button class="log-button" data-amount="100">+100ml</button>
+    <button class="log-button" data-amount="250">+250ml</button>
+    <button class="log-button" data-amount="500">+500ml</button>
+    <button id="reset-button">リセット</button>
+</div>
+{% endblock %}
