@@ -6,6 +6,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const setGoalButton = document.getElementById('set-goal-button');
     const goalInput = document.getElementById('goal-input');
     const progressBarInner = document.getElementById('progress-bar-inner');
+    const historyList = document.getElementById('history-list');
+
+    function updateHistory(record = null, clear = false) {
+        if (clear) {
+            historyList.innerHTML = '';
+            return;
+        }
+
+        if (record) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${record.amount}ml at ${record.time}`;
+            historyList.insertBefore(listItem, historyList.firstChild);
+        } else {
+            fetch('/history')
+            .then(response => response.json())
+            .then(data => {
+                historyList.innerHTML = '';
+                data.forEach(record => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${record.amount}ml at ${record.time}`;
+                    historyList.appendChild(listItem);
+                });
+            });
+        }
+    }
 
     logButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -21,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     currentIntakeDisplay.textContent = `${data.current_intake}ml`;
                     updateProgressBar(data.progress);
+
+                    const currentTime = new Date().toLocaleTimeString('en-us', { hour12: false });
+                    updateHistory({ amount: amount, time: currentTime });
                 });
         });
     });
@@ -33,6 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 currentIntakeDisplay.textContent = `${data.current_intake}ml`;
                 updateProgressBar(data.progress);
+
+                updateHistory(null, true);
             });
     });
 
@@ -61,4 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateProgressBar(progress) {
         progressBarInner.style.width = `${progress}%`;
     }
+
+
+
+    updateHistory()
 });
