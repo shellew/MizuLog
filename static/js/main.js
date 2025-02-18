@@ -1,4 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let userId = localStorage.getItem('user_id');
+    if (!userId) {
+        userId = crypto.randomUUID(); // ランダムなUUIDを生成
+        localStorage.setItem('user_id', userId);
+    }
+    console.log('User ID:', userId);
+    window.userId = userId;
+
+    fetch('/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ user_id: userId })
+    }).then(response => {
+        if (!response.ok) {
+            console.error("Filed to load page:", response.statusText)
+        }
+    });
+
     const currentIntakeDisplay = document.getElementById('current-intake');
     const logButtons = document.querySelectorAll('.log-button');
     const resetButton = document.getElementById('reset-button');
@@ -19,8 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
             listItem.textContent = `${record.amount}ml at ${record.time}`;
             historyList.insertBefore(listItem, historyList.firstChild);
         } else {
-            fetch('/history')
-            .then(response => response.json())
+            fetch('/history', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: window.userId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                } return response.json()
+            })
             .then(data => {
                 historyList.innerHTML = '';
                 data.forEach(record => {
@@ -28,7 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     listItem.textContent = `${record.amount}ml at ${record.time}`;
                     historyList.appendChild(listItem);
                 });
-            });
+            })
+            .catch(error => {
+                console.error("Failed to fetch history:", error);
+            })
         }
     }
 
@@ -40,15 +73,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ amount })
+                body: JSON.stringify({ 
+                    user_id: window.userId,
+                    amount: amount
+                 })
             })
                 .then(response => response.json())
                 .then(data => {
+                    console.log("Log Response Data:", data);
                     currentIntakeDisplay.textContent = `${data.current_intake}ml`;
                     updateProgressBar(data.progress);
 
                     const currentTime = new Date().toLocaleTimeString('en-us', { hour12: false });
                     updateHistory({ amount: amount, time: currentTime });
+                })
+                .catch(error => {
+                    console.error("Failed to log water intake:", error);
                 });
         });
     });
@@ -56,6 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
     resetButton.addEventListener('click', () => {
         fetch('/reset', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_id: window.userId })
         })
             .then(response => response.json())
             .then(data => {
@@ -78,7 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ goal: newGoal })
+            body: JSON.stringify({ 
+                user_id: window.userId,
+                goal: newGoal 
+            })
         })
             .then(response => response.json())
             .then(data => {
