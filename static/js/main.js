@@ -24,20 +24,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetButton = document.getElementById('reset-button');
     const dailyGoalDisplay = document.getElementById('goal');
     const setGoalButton = document.getElementById('set-goal-button');
-    const goalInput = document.getElementById('goal-input');
     const progressBarInner = document.getElementById('progress-bar-inner');
     const historyList = document.getElementById('history-list');
+    const goalModal = document.getElementById('goal-modal');
+    const goalOptionsContainer = document.getElementById('goal-options');
+    const cancelGoalButton = document.getElementById('cancel-goal');
 
     function updateHistory(record = null, clear = false) {
+        // clearがtrueの場合、履歴リストを空にする
         if (clear) {
             historyList.innerHTML = '';
+            fillEmptyHistory(3);
             return;
         }
 
+        // recordが渡された場合、リストを生成し先頭に追加
         if (record) {
             const listItem = document.createElement('li');
             listItem.textContent = `${record.amount}ml at ${record.time}`;
             historyList.insertBefore(listItem, historyList.firstChild);
+
+            while (historyList.childElementCount > 3) {
+                historyList.removeChild(historyList.lastChild);
+            }
+            fillEmptyHistory(3); //必要なら空の履歴を補完
         } else {
             fetch('/history', {
                 method: 'POST',
@@ -53,15 +63,25 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(data => {
                 historyList.innerHTML = '';
-                data.forEach(record => {
+                data.slice(-3).reverse().forEach(record => {
                     const listItem = document.createElement('li');
                     listItem.textContent = `${record.amount}ml at ${record.time}`;
                     historyList.appendChild(listItem);
                 });
+                fillEmptyHistory(3);
             })
             .catch(error => {
                 console.error("Failed to fetch history:", error);
             })
+        }
+    }
+    
+    function fillEmptyHistory(requiredCount) {
+        while (historyList.childElementCount < requiredCount) {
+            const emptyItem = document.createElement('li');
+            emptyItem.textContent = '---';
+            emptyItem.classList.add('empty');
+            historyList.appendChild(emptyItem);
         }
     }
 
@@ -110,36 +130,77 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     });
 
-    setGoalButton.addEventListener('click', () => {
-        const newGoal = parseInt(goalInput.value, 10);
-        if (isNaN(newGoal) || newGoal <= 0) {
-            alert('目標は0以上を入力してください！');
-            return;
-        }
+    function createGoalButtons() {
+        const maxGoal = 5000;
+        const step = 200;
+        let row;
 
-        fetch('/set-goal', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 
-                user_id: window.userId,
-                goal: newGoal 
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                dailyGoalDisplay.textContent = `${data.daily_goal}ml`;
-                goalInput.value = '';
-                updateProgressBar(data.progress);
+        for (let i = 200; i <= maxGoal; i += step) {
+            if ((i -200) % 1000 === 0) {
+                row = document.createElement('div');
+                row.classList.add('button-row');
+                goalOptionsContainer.appendChild(row);
+            }
+
+            const button = document.createElement('button');
+            button.textContent = `${i}ml`;
+            button.dataset.goal = i;
+            button.classList.add('goal-button');
+
+            button.addEventListener('click', () => {
+                const selecteGoal = parseInt(button.dataset.goal, 10);
+        
+                fetch('/set-goal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        user_id: window.userId,
+                        goal: selecteGoal 
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        dailyGoalDisplay.textContent = `${data.daily_goal}ml`;
+                        goalModal.classList.add('hidden');
+                    })
+                    .catch(error => {
+                        console.error("Failed to set goal:", error)
+                    });
             });
-    });
+
+            row.appendChild(button);
+        }
+    }
 
     function updateProgressBar(progress) {
         progressBarInner.style.width = `${progress}%`;
+        updatePercentageDisplay(progress);
     }
 
+    function updatePercentageDisplay(progress) {
+        const percentageDisplay = document.getElementById('current-percentage');
+        percentageDisplay.textContent = `${progress}%`
+    }
+
+    updateHistory();
+
+    createGoalButtons();
+
+    setGoalButton.addEventListener('click', () => {
+        goalModal.classList.remove('hidden');
+    });
+
+    cancelGoalButton.addEventListener('click', () => {
+        goalModal.classList.add('hidden');
+    });
+
+    goalModal.addEventListener('click', (event) => {
+        if (event.target === goalModal) {
+            goalModal.classList.add('hidden');
+        }
+    });
 
 
-    updateHistory()
 });
