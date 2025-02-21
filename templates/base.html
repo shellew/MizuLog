@@ -5,10 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>みずログ</title>
     <link rel="stylesheet" href="static/css/style.css">
+    <link rel="manifest" href="static/manifest.json">
+    <meta name="theme-color" content="#007bff">
 </head>
 <body>
     {% block content %}
     {% endblock %}
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registered with scope:', registration.scope);
+            }).catch(error => {
+                console.error('Service Worker registration failed:', error)
+            });
+        }
+    </script>
     <script src="static/js/main.js"></script>
 </body>
 </html>

@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import sqlite3
+from flask_cors import CORS
+import os
 
 # Flaskアプリの作成
 app = Flask(__name__)
-
+CORS = (app)
 
 DATABASE = 'mizu.db'
 
@@ -133,6 +135,11 @@ def get_history():
     conn.close()
     return jsonify([{'amount': row['amount'], 'time': row['timestamp']} for row in history])
 
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
+
 # アプリの実行
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)

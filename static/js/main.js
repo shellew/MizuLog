@@ -202,5 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    window.addEventListener('offline', () => {
+        alert('現在オフラインです。インターネット接続が必要な機能は利用できません。');
+    });
 
+    window.addEventListener('online', () => {
+        alert('オンラインに復帰しました。');
+    });
 });
