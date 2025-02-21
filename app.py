@@ -16,19 +16,20 @@ def init_db():
     
     # テーブルが存在しない場合のみ作成
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS intakes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT NOT NULL,
-        amount INTEGER NOT NULL,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            daily_goal INTEGER DEFAULT 0
+        )
     """)
-    
+
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        user_id TEXT PRIMARY KEY,
-        daily_goal INTEGER DEFAULT 0
-    )
+        CREATE TABLE IF NOT EXISTS intakes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT ,
+            amount INTEGER,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
     """)
     
     conn.commit()
