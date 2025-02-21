@@ -9,6 +9,32 @@ CORS = (app)
 
 DATABASE = 'mizu.db'
 
+def init_db():
+    """データベースを初期化"""
+    db_path = "water_reminder.db"
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    # テーブルが存在しない場合のみ作成
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS intakes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        amount INTEGER NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+    
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS goals (
+        user_id TEXT PRIMARY KEY,
+        daily_goal INTEGER
+    )
+    """)
+    
+    conn.commit()
+    conn.close()
+
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
@@ -142,4 +168,5 @@ def static_files(filename):
 # アプリの実行
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
+    init_db()
     app.run(host="0.0.0.0", port=port)
