@@ -25,9 +25,9 @@ def init_db():
     """)
     
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS goals (
+    CREATE TABLE IF NOT EXISTS users (
         user_id TEXT PRIMARY KEY,
-        daily_goal INTEGER
+        daily_goal INTEGER DEFAULT 0
     )
     """)
     

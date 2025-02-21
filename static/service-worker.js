@@ -3,8 +3,8 @@ const urlsToCache = [
     "/",
     "/static/css/style.css",
     "/static/js/main.js",
-    "/static/icons/icon-192x192.png",
-    "/static/icons/icon-512x512.png"
+    "/static/icons/icon-192.png",
+    "/static/icons/icon-512.png"
 ];
 
 // インストールイベント: キャッシュを削除
