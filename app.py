@@ -11,8 +11,7 @@ DATABASE = 'mizu.db'
 
 def init_db():
     """データベースを初期化"""
-    db_path = "water_reminder.db"
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     
     # テーブルが存在しない場合のみ作成
