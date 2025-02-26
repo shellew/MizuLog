@@ -149,17 +149,53 @@ def set_goal():
 def get_history():
     data = request.get_json()
     user_id = data.get('user_id')
+    mode = data.get('mode', 'today')
+    target_date = data.get('target_date')
 
     if not user_id:
         return "User ID is required", 400
     
     conn = get_db_connection()
-    history = conn.execute(
-        'SELECT amount, timestamp FROM intakes WHERE user_id = ? AND DATE(timestamp) = DATE("now", "localtime")',
-        (user_id,)
-    ).fetchall()
+
+    if mode == 'today':
+        history = conn.execute(
+            'SELECT amount, timestamp FROM intakes WHERE user_id = ? AND DATE(timestamp) = DATE("now", "localtime")',
+            (user_id,)
+        ).fetchall()
+        result = [{'amount': row['amount'], 'time': row['timestamp']} for row in history]
+
+    elif mode == 'daily':
+        history = conn.execute(
+            'SELECT DATE(timestamp) as date, sum(amount) as total_intake FROM intakes WHERE user_id = ? GROUP BY DATE(timestamp) ORDER BY DATE(timestamp) DESC',
+            (user_id,)
+        ).fetchall()
+        result = [{'date': row['date'], 'total_intake': row['total_intake']} for row in history]
+
+    elif mode == 'date':
+        if not target_date:
+            conn.close()
+            return "Target date is required", 400
+        
+        history = conn.execute(
+            'SELECT amount, timestamp FROM intakes WHERE user_id = ? AND DATE(timestamp) = ?',
+            (user_id, target_date)
+        ).fetchall()
+        result = [{'amount': row['amount'], 'time': row['timestamp']} for row in history]
+
+    else:
+        conn.close()
+        return "Invalid mode", 400
+    
     conn.close()
-    return jsonify([{'amount': row['amount'], 'time': row['timestamp']} for row in history])
+    return jsonify(result)
+
+@app.route('/history/page')
+def history_page():
+    return render_template('/MizuLog/history.html')
+
+@app.route('/dashboard')
+def dashboard_page():
+    return render_template('/MizuLog/dashboard.html')
 
 @app.route('/static/<path:filename>')
 def static_files(filename):
@@ -167,6 +203,4 @@ def static_files(filename):
 
 # アプリの実行
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    init_db()
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
