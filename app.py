@@ -197,6 +197,25 @@ def history_page():
 def dashboard_page():
     return render_template('/MizuLog/dashboard.html')
 
+@app.route('/dashboard-data', methods=['POST'])
+def get_dashboard_data():
+    data = request.get_json()
+    user_id = data.get('user_id')
+
+    if not user_id:
+        return "User ID is required", 400
+    
+    conn = get_db_connection()
+    history = conn.execute(
+        'SELECT DATE(timestamp) as date, SUM(amount) as total_intake FROM intakes WHERE user_id = ? GROUP BY DATE(timestamp) ORDER BY DATE(timestamp) DESC LIMIT 7',
+        (user_id,)
+    ).fetchall()
+    conn.close()
+
+    result = [{'date': row['date'], 'total_intake': row['total_intake']} for row in reversed(history)]
+
+    return jsonify(result)
+
 @app.route('/static/<path:filename>')
 def static_files(filename):
     return send_from_directory('static', filename)

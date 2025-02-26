@@ -6,11 +6,13 @@
     <title>みずログ</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="manifest" href="/static/manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="theme-color" content="#007bff">
 </head>
 <body>
     {% block content %}
     {% endblock %}
+    
     {% include "footer.html" %}
     <script>
         if ('serviceWorker' in navigator) {
@@ -24,5 +26,6 @@
     </script>
     <script src="/static/js/main.js"></script>
     <script src="/static/js/history.js"></script>
+    <script src="/static/js/dashboard.js"></script>
 </body>
 </html>
