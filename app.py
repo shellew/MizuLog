@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, send_file
 import sqlite3
 from flask_cors import CORS
 import os
+import time
 
 # Flaskアプリの作成
 app = Flask(__name__)
 CORS = (app)
 
 DATABASE = 'mizu.db'
+BACKUP_PATH = 'backup.sql'
 
 def init_db():
     """データベースを初期化"""
@@ -39,6 +41,63 @@ def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
+
+# データベースをバックアップ
+@app.route('/backup', methods=['GET'])
+def backup_db():
+    conn = get_db_connection()
+    with open(BACKUP_PATH, "w") as f:
+        for line in conn.iterdump():
+            f.write(f"{line}\n")
+    conn.close()
+    return send_file(BACKUP_PATH, as_attachment=True)
+
+# バックアップデータをリストア
+@app.route('/restore', methods=['POST'])
+def restore_db():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    
+    file = request.files['file']
+    file.save(BACKUP_PATH)
+
+    # 既存の接続を全て閉じる
+    try:
+        temp_conn = sqlite3.connect(DATABASE)
+        temp_conn.close()
+    except:
+        pass
+
+    conn = None
+    try:
+        # データベースファイルを削除する前に、少し待機を入れる
+        time.sleep(0.1)
+        
+        # データベースファイルを直接削除
+        if os.path.exists(DATABASE):
+            os.remove(DATABASE)
+            time.sleep(0.1)  # 削除後も少し待機
+        
+        # データベースを新規作成
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        
+        # バックアップからリストア
+        with open(BACKUP_PATH, "r") as f:
+            sql_script = f.read()
+        cursor.executescript(sql_script)
+        conn.commit()
+        
+        return jsonify({"message": "Database restored successfully"})
+    
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+    finally:
+        if conn:
+            conn.close()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
