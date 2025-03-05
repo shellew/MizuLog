@@ -1,15 +1,42 @@
+:root {
+    --primary-color: #4AA5FF;
+    --secondary-color: #E8F4FF;
+    --accent-color: #2B7CD4;
+    --background-color: #F5F9FF;
+    --text-color: #333333;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Hiragino Sans', 'Arial', sans-serif;
     margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f4f4f4;
+    padding: 0 0 70px 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 h1 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 1.8rem;
     margin: 20px 0;
+}
+
+.current-goal-box {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 85%;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+}
+
+.current-goal-text {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
 }
 
 .goal-container {
@@ -17,38 +44,37 @@ h1 {
 }
 
 .progress-bar {
-    width: 80%;
-    background-color: #ddd;
-    border-radius: 10px;
+    width: 85%;
+    max-width: 400px;
+    height: 12px;
+    background-color: var(--secondary-color);
+    border-radius: 20px;
     overflow: hidden;
-    margin: 20px 0;
+    margin: 20px auto;
 }
 
 .progress-bar-inner {
-    height: 30px;
-    background-color: #82ade8;
-    width: 0%;
-    text-align: center;
-    color: white;
-    line-height: 30px;
-    transition: width 0.3s ease-in-out;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 20px;
+    transition: width 0.5s ease-in-out;
 }
 
 .current-intake-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 70%;
-    margin: 20px 0;
-    padding: 10px;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 85%;
+    max-width: 400px;
+    box-shadow: var(--shadow);
 }
 
 .current-intake-box {
-    padding: 10px 30px;
-    background-color: #fff;
-    border: 2px solid #82ade8;
-    border-radius: 10px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
 }
 
 .current-percentage-circle {
@@ -92,36 +118,30 @@ h1 {
 }
 
 .modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 440px;
-    text-align: center;
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
 }
 
 .goal-selector {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 10px;
-    justify-content: center;
     margin: 20px 0;
 }
 
 .goal-selector button {
-    padding: 10px 15px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+    padding: 12px;
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    background: white;
+    color: var(--primary-color);
+    transition: all 0.2s;
 }
 
 .goal-selector button:hover {
-    background-color: #0056b3;
+    background: var(--primary-color);
+    color: white;
 }
 
 .cancel-button {
@@ -145,30 +165,37 @@ h1 {
 
 .buttons {
     display: flex;
-    gap: 10px;
-    margin: 20px 0;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px auto;
+    width: 85%;
+    max-width: 400px;
 }
 
-.buttons button {
-    padding: 10px 20px;
-    font-size: 16px;
+.log-button, #set-goal-button {
+    padding: 12px 24px;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #007bff;
+    border-radius: 10px;
+    background-color: var(--primary-color);
     color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: var(--shadow);
 }
 
-.buttons button:hover {
-    background-color: #0056b3;
+.log-button:hover, #set-goal-button:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
 }
 
 #reset-button {
-    background-color: #f44336;
+    background-color: #FF6B6B;
 }
 
 #reset-button:hover {
-    background-color: #d32f2f;
+    background-color: #FF4949;
 }
 
 input {
@@ -183,69 +210,45 @@ input {
 }
 
 .history-container {
-    width: 80%;
-    margin: 20px 0;
-    padding: 10px;
-    background-color: #fff;
-    border: 2px solid #82ade8;
-    border-radius: 10px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    width: 85%;
+    max-width: 400px;
+    box-shadow: var(--shadow);
 }
 
 .history-container h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    border-bottom: 2px solid #82ade8;
-    padding-bottom: 5px;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
 }
 
 #history-list {
-    list-style: none;
+    margin: 0;
     padding: 0;
-    margin: 10px 0 0;
-    height: 120px; /* 3行分の高さ */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
 
 #history-list li {
-    font-size: 16px;
-    color: #555;
-    padding: 5px 0;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-    min-height: 30px; /* 各行の高さを固定 */
-}
-
-#history-list li:last-child {
-    border-bottom: none;
-}
-
-#history-list li.empty {
-    color: #ccc;
-    text-align: center;
-    font-style: italic;
+    padding: 12px;
+    border-bottom: 1px solid var(--secondary-color);
+    font-size: 0.9rem;
 }
 
 footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    background: #ffffff;
-    padding: 10px 0;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    background: white;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
 .footer-nav {
     display: flex;
-    width: 100%;
     justify-content: space-around;
+    padding: 12px 0 8px;
 }
 
 .nav-item {
@@ -253,11 +256,18 @@ footer {
     flex-direction: column;
     align-items: center;
     text-decoration: none;
-    color: #333;
-    font-size: 14px;
+    color: var(--text-color);
+    font-size: 0.8rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.nav-item:hover {
+    opacity: 1;
 }
 
 .nav-item img {
     width: 24px;
     height: 24px;
+    margin-bottom: 4px;
 }
